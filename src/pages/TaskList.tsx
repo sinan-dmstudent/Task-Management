@@ -40,9 +40,13 @@ export const TaskList: React.FC = () => {
             <div className="flex items-center justify-between">
                 <h1 className="text-xl font-bold">Tasks</h1>
                 {currentUser?.role === 'Admin' && (
-                    <Link to="/create-task" className="btn btn-primary btn-sm flex items-center gap-xs shadow-md">
-                        <Plus size={16} className="animate-bounce" />
-                        Create
+                    <Link
+                        to="/create-task"
+                        className="btn btn-primary btn-sm w-8 h-8 p-0 flex items-center justify-center shadow-md rounded-full"
+                        aria-label="Create Task"
+                        title="Create Task"
+                    >
+                        <Plus size={18} className="animate-bounce" />
                     </Link>
                 )}
             </div>

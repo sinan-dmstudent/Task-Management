@@ -34,15 +34,16 @@ export const BottomNav: React.FC = () => {
                         <NavLink
                             to={item.to}
                             end={item.to === '/'}
+                            aria-label={item.label}
+                            title={item.label}
                             className={({ isActive }) =>
-                                `flex flex-col items-center justify-center w-full gap-1 text-xs font-medium transition-colors ${isActive
+                                `flex items-center justify-center w-full h-full text-gray-500 hover:text-gray-900 transition-colors ${isActive
                                     ? 'text-primary'
-                                    : 'text-gray-500 hover:text-gray-900'
+                                    : ''
                                 }`
                             }
                         >
-                            <item.icon size={20} />
-                            <span className="truncate max-w-[64px]">{item.label}</span>
+                            <item.icon size={24} />
                         </NavLink>
                     </li>
                 ))}

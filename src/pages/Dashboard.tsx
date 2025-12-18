@@ -63,9 +63,13 @@ export const Dashboard: React.FC = () => {
                 <div className="flex justify-between items-center">
                     <h1 className="text-xl font-bold">Hello, {currentUser?.name.split(' ')[0]} 👋</h1>
                     {currentUser?.role === 'Admin' && (
-                        <Link to="/create-task" className="btn btn-primary btn-sm flex items-center gap-xs shadow-md animate-pulse">
-                            <Plus size={16} className="animate-bounce" />
-                            Create
+                        <Link
+                            to="/create-task"
+                            className="btn btn-primary btn-sm w-8 h-8 p-0 flex items-center justify-center shadow-md animate-pulse rounded-full"
+                            aria-label="Create Task"
+                            title="Create Task"
+                        >
+                            <Plus size={18} className="animate-bounce" />
                         </Link>
                     )}
                 </div>
