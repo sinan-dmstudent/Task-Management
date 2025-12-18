@@ -3,7 +3,7 @@ import { useAppContext } from '../context/AppContext';
 import { Card } from '../components/common/Card';
 import { Badge } from '../components/common/Badge';
 import { Input } from '../components/common/Input';
-import { Search } from 'lucide-react';
+import { Search, Plus } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { cn } from '../utils/cn';
 
@@ -39,7 +39,12 @@ export const TaskList: React.FC = () => {
         <div className="flex flex-col gap-md fade-in">
             <div className="flex items-center justify-between">
                 <h1 className="text-xl font-bold">Tasks</h1>
-
+                {currentUser?.role === 'Admin' && (
+                    <Link to="/create-task" className="btn btn-primary btn-sm flex items-center gap-xs shadow-md">
+                        <Plus size={16} className="animate-bounce" />
+                        Create
+                    </Link>
+                )}
             </div>
 
 

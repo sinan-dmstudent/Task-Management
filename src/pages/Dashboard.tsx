@@ -2,7 +2,7 @@ import React from 'react';
 import { useAppContext } from '../context/AppContext';
 import { Card } from '../components/common/Card';
 import { Badge } from '../components/common/Badge';
-import { Clock, AlertCircle } from 'lucide-react';
+import { Clock, AlertCircle, Plus } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { OverdueAlertModal } from '../components/features/tasks/OverdueAlertModal';
@@ -60,8 +60,16 @@ export const Dashboard: React.FC = () => {
     return (
         <div className="flex flex-col gap-md fade-in relative">
             <div className="flex flex-col gap-sm">
-                <h1 className="text-xl font-bold">Hello, {currentUser?.name.split(' ')[0]} 👋</h1>
-                <p className="text-sm text-secondary">Here's what's happening today.</p>
+                <div className="flex justify-between items-center">
+                    <h1 className="text-xl font-bold">Hello, {currentUser?.name.split(' ')[0]} 👋</h1>
+                    {currentUser?.role === 'Admin' && (
+                        <Link to="/create-task" className="btn btn-primary btn-sm flex items-center gap-xs shadow-md animate-pulse">
+                            <Plus size={16} className="animate-bounce" />
+                            Create
+                        </Link>
+                    )}
+                </div>
+                <p className="text-sm text-secondary -mt-2">Here's what's happening today.</p>
             </div>
 
             {/* Stats Grid */}
@@ -77,25 +85,29 @@ export const Dashboard: React.FC = () => {
             </div>
 
             {/* Overdue Alert (Inline) */}
-            {showOverdueModal && (
-                <OverdueAlertModal
-                    tasks={overdueTasks}
-                    onClose={() => setShowOverdueModal(false)}
-                />
-            )}
+            {
+                showOverdueModal && (
+                    <OverdueAlertModal
+                        tasks={overdueTasks}
+                        onClose={() => setShowOverdueModal(false)}
+                    />
+                )
+            }
 
             {/* Quick Actions / High Priority */}
-            {highPriorityTasks > 0 && !showOverdueModal && (
-                <div className="bg-red-50 border border-red-100 rounded-xl p-4 flex items-center gap-md" style={{ backgroundColor: '#fef2f2', borderColor: '#fee2e2' }}>
-                    <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#fee2e2', color: '#dc2626' }}>
-                        <AlertCircle size={20} />
+            {
+                highPriorityTasks > 0 && !showOverdueModal && (
+                    <div className="bg-red-50 border border-red-100 rounded-xl p-4 flex items-center gap-md" style={{ backgroundColor: '#fef2f2', borderColor: '#fee2e2' }}>
+                        <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#fee2e2', color: '#dc2626' }}>
+                            <AlertCircle size={20} />
+                        </div>
+                        <div className="flex flex-col">
+                            <span className="font-bold text-sm text-[var(--text-main)]">Attention Needed</span>
+                            <span className="text-xs text-secondary">You have {highPriorityTasks} high priority tasks pending.</span>
+                        </div>
                     </div>
-                    <div className="flex flex-col">
-                        <span className="font-bold text-sm text-[var(--text-main)]">Attention Needed</span>
-                        <span className="text-xs text-secondary">You have {highPriorityTasks} high priority tasks pending.</span>
-                    </div>
-                </div>
-            )}
+                )
+            }
 
             {/* Recent Activity */}
             <section className="flex flex-col gap-md mt-2">
@@ -145,6 +157,6 @@ export const Dashboard: React.FC = () => {
                     })}
                 </div>
             </section>
-        </div>
+        </div >
     );
 };
