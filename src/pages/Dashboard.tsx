@@ -65,11 +65,11 @@ export const Dashboard: React.FC = () => {
                     {currentUser?.role === 'Admin' && (
                         <Link
                             to="/create-task"
-                            className="btn btn-primary btn-sm w-8 h-8 p-0 flex items-center justify-center shadow-md animate-pulse rounded-full"
+                            className="btn btn-primary btn-sm w-10 h-10 p-0 flex items-center justify-center shadow-md animate-pulse rounded-full"
                             aria-label="Create Task"
                             title="Create Task"
                         >
-                            <Plus size={18} className="animate-bounce" />
+                            <Plus size={24} className="animate-bounce" />
                         </Link>
                     )}
                 </div>

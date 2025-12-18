@@ -28,7 +28,7 @@ export const BottomNav: React.FC = () => {
 
     return (
         <nav className="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 z-50 pb-safe shadow-md">
-            <ul className="flex justify-around items-end h-16 pb-2">
+            <ul className="flex justify-around items-center h-16">
                 {navItems.map((item) => (
                     <li key={item.to} className="flex-1 flex justify-center">
                         <NavLink
