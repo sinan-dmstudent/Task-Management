@@ -1,0 +1,24 @@
+
+> task-manager@0.0.0 lint
+> eslint .
+
+
+C:\Users\muham\Downloads\Task Manager\src\context\AppContext.tsx
+   77:5   error    React Hook "useEffect" is called conditionally. React Hooks must be called in the exact same order in every component render    react-hooks/rules-of-hooks
+   98:8   warning  React Hook useEffect has a missing dependency: 'fetchUserProfile'. Either include it or remove the dependency array             react-hooks/exhaustive-deps
+  100:5   error    React Hook "useEffect" is called conditionally. React Hooks must be called in the exact same order in every component render    react-hooks/rules-of-hooks
+  151:60  error    Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  171:58  error    Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  334:17  error    Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\muham\Downloads\Task Manager\src\pages\Login.tsx
+  31:23  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\muham\Downloads\Task Manager\src\pages\Settings.tsx
+  33:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\muham\Downloads\Task Manager\src\pages\Signup.tsx
+  78:23  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+Γ£û 9 problems (8 errors, 1 warning)
+

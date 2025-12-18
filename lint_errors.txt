@@ -1,0 +1,16 @@
+
+> task-manager@0.0.0 lint
+> eslint .
+
+
+C:\Users\muham\Downloads\Task Manager\src\context\AppContext.tsx
+   92:8   warning  React Hook useEffect has a missing dependency: 'fetchWorkspaceData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+   94:64  error    Unexpected any. Specify a different type                                                                               @typescript-eslint/no-explicit-any
+  137:44  error    Unexpected any. Specify a different type                                                                               @typescript-eslint/no-explicit-any
+
+C:\Users\muham\Downloads\Task Manager\src\pages\TaskForm.tsx
+  44:45  error  React Hook "useState" is called conditionally. React Hooks must be called in the exact same order in every component render  react-hooks/rules-of-hooks
+  69:25  error  Unexpected any. Specify a different type                                                                                     @typescript-eslint/no-explicit-any
+
+Γ£û 5 problems (4 errors, 1 warning)
+

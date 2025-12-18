@@ -1,0 +1,10 @@
+
+> task-manager@0.0.0 lint
+> eslint .
+
+
+C:\Users\muham\Downloads\Task Manager\src\context\AppContext.tsx
+  341:17  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+Γ£û 1 problem (1 error, 0 warnings)
+

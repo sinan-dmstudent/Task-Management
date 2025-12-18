@@ -1,0 +1,7 @@
+src/context/AppContext.tsx(4,46): error TS6196: 'Priority' is declared but never used.
+src/context/AppContext.tsx(4,64): error TS6196: 'Comment' is declared but never used.
+src/context/AppContext.tsx(4,73): error TS6196: 'Attachment' is declared but never used.
+src/context/AppContext.tsx(265,29): error TS6133: 'email' is declared but its value is never read.
+src/context/AppContext.tsx(265,44): error TS6133: 'name' is declared but its value is never read.
+src/context/AppContext.tsx(265,58): error TS6133: 'departmentId' is declared but its value is never read.
+src/context/AppContext.tsx(265,80): error TS6133: 'role' is declared but its value is never read.
