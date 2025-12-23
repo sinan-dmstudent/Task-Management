@@ -904,7 +904,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         markTaskAsRead,
         updateComment,
         deleteComment
-    }), [
+    }), [ // eslint-disable-line react-hooks/exhaustive-deps
         session,
         user,
         currentUser,
