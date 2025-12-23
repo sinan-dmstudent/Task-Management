@@ -1,9 +1,20 @@
 import React from 'react';
-
 import { BottomNav } from './BottomNav';
-import { Outlet } from 'react-router-dom';
+import { Outlet, Navigate, useLocation } from 'react-router-dom';
+import { useAppContext } from '../../context/AppContext';
 
 export const Layout: React.FC = () => {
+    const { session, loading } = useAppContext();
+    const location = useLocation();
+
+    if (loading) {
+        return <div className="flex h-screen items-center justify-center">Loading...</div>;
+    }
+
+    if (!session) {
+        return <Navigate to="/login" state={{ from: location }} replace />;
+    }
+
     return (
         <div className="min-h-screen bg-body flex">
             {/* Main Content Area */}

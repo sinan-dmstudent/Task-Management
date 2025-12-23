@@ -10,7 +10,7 @@ interface NavItem {
     adminOnly?: boolean;
 }
 
-export const BottomNav: React.FC = () => {
+export const BottomNav = React.memo(() => {
     const { isAdmin } = useAppContext();
 
     const baseNavItems: NavItem[] = [
@@ -27,7 +27,7 @@ export const BottomNav: React.FC = () => {
     const navItems: NavItem[] = [...visibleItems];
 
     return (
-        <nav className="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 z-50 pb-safe shadow-md">
+        <nav className="fixed bottom-0 left-0 w-full bg-primary z-50 pb-safe shadow-lg">
             <ul className="flex justify-around items-center h-16">
                 {navItems.map((item) => (
                     <li key={item.to} className="flex-1 flex justify-center">
@@ -37,9 +37,9 @@ export const BottomNav: React.FC = () => {
                             aria-label={item.label}
                             title={item.label}
                             className={({ isActive }) =>
-                                `flex items-center justify-center w-full h-full text-gray-500 hover:text-gray-900 transition-colors ${isActive
-                                    ? 'text-primary'
-                                    : ''
+                                `flex items-center justify-center w-full h-full transition-all duration-200 ${isActive
+                                    ? 'text-white opacity-100'
+                                    : 'text-white opacity-60 hover:opacity-100 hover:scale-105'
                                 }`
                             }
                         >
@@ -50,4 +50,4 @@ export const BottomNav: React.FC = () => {
             </ul>
         </nav>
     );
-};
+});

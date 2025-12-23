@@ -13,7 +13,7 @@ export const TaskDetails: React.FC = () => {
     const {
         tasks, departments, staff, currentUser,
         updateTaskStatus, addComment, deleteTask, markTaskAsRead,
-        updateComment, deleteComment
+        updateComment, deleteComment, setTaskListOpenState
     } = useAppContext();
     const [commentInput, setCommentInput] = useState('');
     const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
@@ -23,8 +23,12 @@ export const TaskDetails: React.FC = () => {
         if (taskId) {
             markTaskAsRead(taskId);
         }
+        setTaskListOpenState(true);
+        return () => {
+            setTaskListOpenState(false);
+        };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [taskId]);
+    }, [taskId, setTaskListOpenState]);
 
     const task = tasks.find(t => t.id === taskId);
     const department = departments.find(d => d.id === task?.departmentId);
@@ -172,15 +176,21 @@ export const TaskDetails: React.FC = () => {
             {/* Status Actions */}
             <div className="flex flex-col gap-sm">
                 <span className="text-sm font-bold">Status</span>
-                <div className="flex bg-[var(--bg-surface)] p-1 rounded-lg border border-[var(--border)]">
+                <div className="flex gap-2 p-1 overflow-x-auto no-scrollbar">
                     {(['Not Started', 'In Progress', 'Completed'] as Status[]).map((s) => (
                         <button
                             key={s}
                             onClick={() => handleStatusChange(s)}
-                            className={`flex-1 py-2 text-xs font-medium rounded-md transition-all ${task.status === s
-                                ? 'bg-[var(--primary)] text-white shadow-sm'
-                                : 'text-[var(--text-secondary)] hover:bg-[var(--bg-body)]'
+                            className={`flex-1 py-3 px-4 text-sm font-bold rounded-lg transition-all transform active:scale-95 duration-200 border shadow-sm ${task.status === s
+                                    ? 'bg-violet-600 text-white border-violet-600 ring-2 ring-violet-200'
+                                    : 'bg-white text-gray-600 border-gray-200 hover:border-violet-400 hover:text-violet-600'
                                 }`}
+                            style={{
+                                minWidth: '100px',
+                                backgroundColor: task.status === s ? '#7c3aed' : undefined,
+                                color: task.status === s ? '#ffffff' : undefined,
+                                borderColor: task.status === s ? '#7c3aed' : undefined
+                            }}
                         >
                             {s}
                         </button>

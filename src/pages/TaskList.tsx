@@ -1,17 +1,23 @@
 import React, { useState } from 'react';
 import { useAppContext } from '../context/AppContext';
-import { Card } from '../components/common/Card';
-import { Badge } from '../components/common/Badge';
 import { Input } from '../components/common/Input';
-import { Search, Plus } from 'lucide-react';
+import { Plus } from 'lucide-react';
+import { TaskItem } from '../components/common/TaskItem';
 import { Link } from 'react-router-dom';
 import { cn } from '../utils/cn';
 
 export const TaskList: React.FC = () => {
-    const { tasks, departments, currentUser, getUnreadCount, isTaskNew } = useAppContext();
+    const { tasks, departments, currentUser, setTaskListOpenState, getUnreadCount } = useAppContext();
     const [search, setSearch] = useState('');
     const [filterStatus, setFilterStatus] = useState<'All' | 'Pending' | 'Completed' | 'Overdue'>('All');
     const [filterDept, setFilterDept] = useState<string>('All');
+
+    React.useEffect(() => {
+        setTaskListOpenState(true);
+        return () => {
+            setTaskListOpenState(false);
+        };
+    }, [setTaskListOpenState]);
 
     const filteredTasks = tasks.filter(task => {
         const matchesSearch = task.title.toLowerCase().includes(search.toLowerCase());
@@ -55,10 +61,8 @@ export const TaskList: React.FC = () => {
 
             {/* Search */}
             <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-secondary" size={16} />
                 <Input
                     placeholder="Search tasks..."
-                    className="pl-9"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                 />
@@ -81,17 +85,24 @@ export const TaskList: React.FC = () => {
             )}
 
             {/* Tabs */}
-            <div className="flex p-1 bg-[var(--border)] rounded-lg">
+            {/* Navigation Tabs - Updated Design */}
+            <div className="flex gap-2 p-1 overflow-x-auto no-scrollbar">
                 {(['All', 'Pending', 'Overdue', 'Completed'] as const).map((tab) => (
                     <button
                         key={tab}
                         onClick={() => setFilterStatus(tab)}
                         className={cn(
-                            "flex-1 py-1.5 text-xs font-medium rounded-md transition-all",
+                            "flex-1 py-3 px-4 text-sm font-bold rounded-lg transition-all transform active:scale-95 duration-200 border shadow-sm",
                             filterStatus === tab
-                                ? "bg-white text-[var(--text-main)] shadow-sm"
-                                : "text-[var(--text-secondary)] hover:text-[var(--text-main)]"
+                                ? "bg-violet-600 text-white border-violet-600 ring-2 ring-violet-200" // Use Tailwind color names that map to same hex or close
+                                : "bg-white text-gray-600 border-gray-200 hover:border-violet-400 hover:text-violet-600"
                         )}
+                        style={{
+                            minWidth: '100px',
+                            backgroundColor: filterStatus === tab ? '#7c3aed' : undefined,
+                            color: filterStatus === tab ? '#ffffff' : undefined,
+                            borderColor: filterStatus === tab ? '#7c3aed' : undefined
+                        }}
                     >
                         {tab}
                     </button>
@@ -103,47 +114,11 @@ export const TaskList: React.FC = () => {
                 {filteredTasks.length === 0 ? (
                     <div className="text-center py-10 text-secondary text-sm">No tasks found.</div>
                 ) : (
-                    filteredTasks.map(task => {
-                        const isOverdue = new Date(task.dueDate) < new Date() && task.status !== 'Completed';
-                        return (
-                            <Link to={`/tasks/${task.id}`} key={task.id} style={{ textDecoration: 'none', color: 'inherit' }}>
-                                <Card hoverable className={`flex flex-col gap-xs ${isOverdue ? 'border-red-200 bg-red-50/30' : ''}`}>
-                                    <div className="flex justify-between items-start">
-                                        <span className="text-xs text-primary font-medium">{departments.find(d => d.id === task.departmentId)?.name}</span>
-                                        <div className="flex gap-1">
-                                            {isTaskNew(task.id) && (
-                                                <Badge variant="info" className="animate-pulse">New</Badge>
-                                            )}
-                                            {isOverdue && (
-                                                <Badge variant="error" className="animate-pulse">Overdue</Badge>
-                                            )}
-                                            <Badge variant={
-                                                task.status === 'Completed' ? 'success' :
-                                                    task.status === 'In Progress' ? 'warning' : 'neutral'
-                                            }>
-                                                {task.status}
-                                            </Badge>
-                                        </div>
-                                    </div>
-                                    <h3 className="font-medium text-sm">{task.title}</h3>
-                                    <div className="flex items-center justify-between mt-2">
-                                        <div className="flex -space-x-2">
-                                            {/* Avatars placeholder */}
-                                            <div className="w-6 h-6 rounded-full bg-slate-200 border-2 border-white"></div>
-                                        </div>
-                                        <span className={`text-xs ${isOverdue ? 'text-red-600 font-bold' : 'text-secondary'}`}>
-                                            {new Date(task.dueDate).toLocaleDateString()}
-                                        </span>
-                                    </div>
-                                    {getUnreadCount(task.id) > 0 && (
-                                        <div className="absolute top-10 right-3 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm animate-pulse z-10">
-                                            {getUnreadCount(task.id)} new
-                                        </div>
-                                    )}
-                                </Card>
-                            </Link>
-                        );
-                    })
+                    filteredTasks.map(task => (
+                        <Link to={`/tasks/${task.id}`} key={task.id} style={{ textDecoration: 'none', color: 'inherit' }}>
+                            <TaskItem task={task} />
+                        </Link>
+                    ))
                 )}
             </div>
         </div>

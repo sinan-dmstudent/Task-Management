@@ -2,7 +2,7 @@ import React from 'react';
 import { useAppContext } from '../context/AppContext';
 import { Card } from '../components/common/Card';
 import { Input } from '../components/common/Input';
-import { Mail, Plus, Search } from 'lucide-react';
+import { Mail, Plus } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 
 export const UserList: React.FC = () => {
@@ -49,10 +49,8 @@ export const UserList: React.FC = () => {
 
             <div className="flex flex-col gap-sm mb-2">
                 <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-secondary" size={16} />
                     <Input
                         placeholder="Search users..."
-                        className="pl-9"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                     />

@@ -47,6 +47,7 @@ interface AppContextType {
     markTaskAsRead: (taskId: string) => void;
     getUnreadCount: (taskId: string) => number;
     isTaskNew: (taskId: string) => boolean;
+    setTaskListOpenState: (isOpen: boolean) => void;
     updateComment: (taskId: string, commentId: string, content: string) => Promise<void>;
     deleteComment: (taskId: string, commentId: string) => Promise<void>;
 }
@@ -447,10 +448,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
             let uploadedAttachments: Attachment[] = [];
 
             if (task.attachments && task.attachments.length > 0) {
-                uploadedAttachments = await Promise.all(task.attachments.map(async (att) => {
-                    let finalUrl = att.url;
+                const results = await Promise.all(task.attachments.map(async (att) => {
+                    let finalUrl = '';
                     let storagePath = '';
 
+                    // 1. If there is a file object, upload it
                     if (att.file) {
                         // Sanitize filename
                         const sanitizedName = att.name.replace(/[^a-zA-Z0-9.-]/g, '_');
@@ -461,31 +463,48 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
                             .upload(path, att.file);
 
                         if (uploadError) {
-                            console.error('Upload error:', uploadError);
-                        } else if (uploadData) {
+                            console.error('Upload error for file:', att.name, uploadError);
+                            // If upload fails, we return null to skip this attachment
+                            return null;
+                        }
+
+                        if (uploadData) {
                             storagePath = uploadData.path;
                             const { data: urlData } = supabase.storage.from('attachments').getPublicUrl(uploadData.path);
                             finalUrl = urlData.publicUrl;
                         }
+                    } else if (att.url && !att.url.startsWith('blob:')) {
+                        // 2. If it's already a valid remote URL (not a blob), keep it
+                        finalUrl = att.url;
                     }
 
+                    // If we couldn't get a valid URL, skip
+                    if (!finalUrl) {
+                        console.warn(`Skipping attachment ${att.name} because no valid URL could be generated.`);
+                        return null;
+                    }
+
+                    // 3. Save to DB
                     const { data: attData, error: attError } = await supabase
                         .from('attachments')
                         .insert({
                             task_id: data.id,
                             name: att.name,
                             type: att.type,
-                            url: finalUrl,
+                            url: finalUrl, // Must be the remote public URL
                             storage_path: storagePath
                         })
                         .select()
                         .single();
 
-                    if (attError) console.error('Error saving attachments:', attError);
+                    if (attError) {
+                        console.error('Error saving attachment metadata:', attError);
+                        return null;
+                    }
 
-                    // Return the attachment object for local state (prefer DB data if available, else local partial)
+                    // Return the complete object
                     return {
-                        id: attData ? attData.id : att.id, // Use DB ID if available
+                        id: attData ? attData.id : att.id,
                         taskId: data.id,
                         name: att.name,
                         type: att.type,
@@ -493,6 +512,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
                         file: att.file
                     };
                 }));
+
+                // Filter out any nulls (failed uploads)
+                uploadedAttachments = results.filter(a => a !== null) as Attachment[];
             }
 
             const newTask: Task = {
@@ -760,29 +782,63 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         localStorage.setItem(`task_read_status_${user.id}`, JSON.stringify(newStatus));
     };
 
+    // Track Task List visibility for badge logic
+    const [isTaskListOpen, setIsTaskListOpen] = useState(false);
+    const [lastTaskListClosedAt, setLastTaskListClosedAt] = useState<string>(new Date().toISOString());
+
+    // Effect: Load last closed time for specific user when user loads
+    useEffect(() => {
+        if (user) {
+            const key = `lastTaskListClosedAt_${user.id}`;
+            const stored = localStorage.getItem(key);
+            if (stored) {
+                setLastTaskListClosedAt(stored);
+            } else {
+                // If never loaded before, default to now (assume all read)
+                // OR default to 0 to show all as unread?
+                // Defaulting to NOW is safer to avoid overwhelming badge on first login.
+                const now = new Date().toISOString();
+                setLastTaskListClosedAt(now);
+                localStorage.setItem(key, now);
+            }
+        }
+    }, [user]);
+
+    const setTaskListOpenState = React.useCallback((isOpen: boolean) => {
+        setIsTaskListOpen(isOpen);
+        // Update timestamp whenever state changes (open or close)
+        // This ensures badges clear on open, and we track "new since close" on close.
+        const now = new Date().toISOString();
+        setLastTaskListClosedAt(now);
+        if (user) {
+            localStorage.setItem(`lastTaskListClosedAt_${user.id}`, now);
+        }
+    }, [user]);
+
     const getUnreadCount = (taskId: string) => {
+        // If currently viewing the list, badges are cleared/suppressed
+        if (isTaskListOpen) return 0;
+
         const task = tasks.find(t => t.id === taskId);
         if (!task || !task.comments) return 0;
 
-        const lastRead = taskReadStatus[taskId];
-        if (!lastRead) return task.comments.length; // Never read = all unread
+        return task.comments.filter(c => {
+            // 1. Sender doesn't see badge for their own comment
+            if (c.authorId === user?.id) return false;
 
-        return task.comments.filter(c => new Date(c.createdAt) > new Date(lastRead)).length;
+            // 2. Only show if created AFTER the list was last viewed/closed
+            return new Date(c.createdAt) > new Date(lastTaskListClosedAt);
+        }).length;
     };
 
     const isTaskNew = (taskId: string) => {
         if (!user) return false;
-        // Logic: Task is assigned to me AND I haven't read it yet (no entry in taskReadStatus)
-        // If I am observing (Admin) I might not want to see "New" for every task, strictly assigned ones?
-        // Request: "newly assigned tasks be indicated to staff" -> strict check on assignment.
         const task = tasks.find(t => t.id === taskId);
         if (!task) return false;
-
-        // Strict check: Must be assigned to me
         if (task.assignedStaffId !== user.id) return false;
 
-        // Check if read
-        return !taskReadStatus[taskId];
+        if (isTaskListOpen) return false;
+        return new Date(task.createdAt) > new Date(lastTaskListClosedAt);
     };
 
     const signOut = async () => {
@@ -819,7 +875,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         departmentId: ''
     };
 
-    const value = {
+    const value = React.useMemo(() => ({
         session,
         user,
         currentUser,
@@ -842,12 +898,25 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
         deleteDepartment,
         deleteTask,
-        markTaskAsRead,
         getUnreadCount,
         isTaskNew,
+        setTaskListOpenState,
+        markTaskAsRead,
         updateComment,
         deleteComment
-    };
+    }), [
+        session,
+        user,
+        currentUser,
+        workspace,
+        tasks,
+        departments,
+        staff,
+        loading,
+        taskReadStatus, // Dependency for getUnreadCount/isTaskNew
+        isTaskListOpen, // Dependency for getUnreadCount/isTaskNew
+        lastTaskListClosedAt // Dependency for getUnreadCount/isTaskNew
+    ]);
 
     if (!isSupabaseConfigured) {
         return (

@@ -1,20 +1,19 @@
 import React from 'react';
 import { useAppContext } from '../context/AppContext';
 import { Card } from '../components/common/Card';
-import { Badge } from '../components/common/Badge';
-import { Clock, AlertCircle, Plus } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { AlertCircle, Plus } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { TaskItem } from '../components/common/TaskItem';
 
 import { OverdueAlertModal } from '../components/features/tasks/OverdueAlertModal';
 
 export const Dashboard: React.FC = () => {
-    const { tasks, currentUser, departments } = useAppContext();
-    const navigate = useNavigate();
+    const { tasks, currentUser } = useAppContext();
     const [showOverdueModal, setShowOverdueModal] = React.useState(false);
 
     // Recent Tasks (Limit to 3)
     // Recent Tasks (Sorted by Unread, then Date)
-    const { getUnreadCount, isTaskNew } = useAppContext();
+    const { getUnreadCount } = useAppContext();
     const recentTasks = [...tasks]
         .sort((a, b) => {
             const unreadA = getUnreadCount(a.id);
@@ -121,44 +120,11 @@ export const Dashboard: React.FC = () => {
                 </div>
 
                 <div className="flex flex-col gap-sm">
-                    {recentTasks.map(task => {
-                        const dept = departments.find(d => d.id === task.departmentId);
-                        const isOverdue = new Date(task.dueDate) < new Date() && task.status !== 'Completed';
-
-                        return (
-                            <Card
-                                key={task.id}
-                                hoverable
-                                className={`flex flex-col gap-xs p-3 cursor-pointer ${isOverdue ? 'border-red-200 bg-red-50/30' : ''}`}
-                                onClick={() => navigate(`/tasks/${task.id}`)}
-                            >
-                                <div className="flex justify-between items-start">
-                                    <span className="text-xs text-secondary font-medium uppercase tracking-wider">{dept?.name}</span>
-                                    <div className="flex gap-1">
-                                        {isTaskNew(task.id) && (
-                                            <Badge variant="info" className="animate-pulse px-1.5 py-0.5 text-[10px]">New</Badge>
-                                        )}
-                                        {isOverdue && (
-                                            <Badge variant="error" className="animate-pulse px-1.5 py-0.5 text-[10px]">Overdue</Badge>
-                                        )}
-                                        <Badge variant={task.priority === 'High' ? 'error' : task.priority === 'Medium' ? 'warning' : 'info'}>
-                                            {task.priority}
-                                        </Badge>
-                                    </div>
-                                </div>
-                                <h3 className="font-bold text-sm truncate">{task.title}</h3>
-                                <div className={`flex items-center gap-xs text-xs mt-1 ${isOverdue ? 'text-red-600 font-bold' : 'text-secondary'}`}>
-                                    <Clock size={12} />
-                                    <span>{new Date(task.dueDate).toLocaleDateString()}</span>
-                                </div>
-                                {getUnreadCount(task.id) > 0 && (
-                                    <div className="absolute top-10 right-3 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm animate-pulse">
-                                        {getUnreadCount(task.id)} new
-                                    </div>
-                                )}
-                            </Card>
-                        );
-                    })}
+                    {recentTasks.map(task => (
+                        <Link to={`/tasks/${task.id}`} key={task.id} style={{ textDecoration: 'none', color: 'inherit' }}>
+                            <TaskItem task={task} />
+                        </Link>
+                    ))}
                 </div>
             </section>
         </div >
