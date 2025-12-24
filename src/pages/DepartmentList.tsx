@@ -2,7 +2,7 @@ import React from 'react';
 import { useAppContext } from '../context/AppContext';
 import { Card } from '../components/common/Card';
 import { Building2, Users, Plus } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 export const DepartmentList: React.FC = () => {
     const { departments, staff, currentUser } = useAppContext();
@@ -13,9 +13,14 @@ export const DepartmentList: React.FC = () => {
             <div className="flex justify-between items-center">
                 <h1 className="text-xl font-bold">Departments</h1>
                 {currentUser.role === 'Admin' && (
-                    <button onClick={() => navigate('/create-department')} className="p-2 bg-[var(--primary)] text-white rounded-full shadow-lg hover:bg-[var(--primary-hover)]">
-                        <Plus size={20} />
-                    </button>
+                    <Link
+                        to="/create-department"
+                        className="btn btn-primary btn-sm w-10 h-10 p-0 flex items-center justify-center shadow-md rounded-full"
+                        aria-label="Create Department"
+                        title="Create Department"
+                    >
+                        <Plus size={24} className="animate-bounce" />
+                    </Link>
                 )}
             </div>
 

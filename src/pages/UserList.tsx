@@ -3,11 +3,10 @@ import { useAppContext } from '../context/AppContext';
 import { Card } from '../components/common/Card';
 import { Input } from '../components/common/Input';
 import { Mail, Plus } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 export const UserList: React.FC = () => {
     const { staff, departments, currentUser } = useAppContext();
-    const navigate = useNavigate();
     const [filterDept, setFilterDept] = React.useState<string>('All');
     const [search, setSearch] = React.useState('');
 
@@ -41,9 +40,14 @@ export const UserList: React.FC = () => {
             <div className="flex justify-between items-center">
                 <h1 className="text-xl font-bold">User Directory</h1>
                 {currentUser?.role === 'Admin' && (
-                    <button onClick={() => navigate('/create-user')} className="p-2 bg-[var(--primary)] text-white rounded-full shadow-lg hover:bg-[var(--primary-hover)]">
-                        <Plus size={20} />
-                    </button>
+                    <Link
+                        to="/create-user"
+                        className="btn btn-primary btn-sm w-10 h-10 p-0 flex items-center justify-center shadow-md rounded-full"
+                        aria-label="Create User"
+                        title="Create User"
+                    >
+                        <Plus size={24} className="animate-bounce" />
+                    </Link>
                 )}
             </div>
 
