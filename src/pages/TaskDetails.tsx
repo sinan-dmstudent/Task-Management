@@ -207,55 +207,72 @@ export const TaskDetails: React.FC = () => {
                     </h3>
                 </div>
 
-                <div className="flex flex-col gap-md">
+                <div className="flex flex-col space-y-2 px-1">
                     {task.comments.map(comment => {
                         const author = staff.find(s => s.id === comment.authorId);
                         const isMe = author?.id === currentUser.id;
                         const isEditing = editingCommentId === comment.id;
 
                         return (
-                            <div key={comment.id} className={`flex gap-sm ${isMe ? 'flex-row-reverse' : ''}`}>
-                                <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-xs font-bold flex-shrink-0">
-                                    {author?.name.charAt(0)}
-                                </div>
-                                <div className={`flex flex-col max-w-[80%] ${isMe ? 'items-end' : 'items-start'}`}>
-                                    {isEditing ? (
-                                        <div className="flex flex-col gap-1 items-end w-full min-w-[200px]">
-                                            <Input
-                                                value={editContent}
-                                                onChange={(e) => setEditContent(e.target.value)}
-                                                autoFocus
-                                                className="text-sm"
-                                            />
-                                            <div className="flex gap-2 mt-1">
-                                                <button onClick={() => handleSaveEdit(comment.id)} className="p-1 text-green-600 hover:bg-green-50 rounded">
-                                                    <Check size={16} />
-                                                </button>
-                                                <button onClick={handleCancelEdit} className="p-1 text-red-500 hover:bg-red-50 rounded">
-                                                    <X size={16} />
-                                                </button>
+                            <div key={comment.id} className={`flex w-full ${isMe ? 'justify-end' : 'justify-start'}`}>
+                                <div className={`flex max-w-[85%] ${isMe ? 'flex-row-reverse' : 'flex-row'} gap-2 items-end`}>
+                                    {/* Avatar */}
+                                    <div className="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center text-[10px] font-bold flex-shrink-0 text-slate-600 mb-1">
+                                        {author?.name.charAt(0)}
+                                    </div>
+
+                                    {/* Chat Bubble */}
+                                    <div
+                                        className={`relative px-3 py-2 shadow-sm rounded-lg text-sm group ${isMe
+                                                ? 'bg-violet-100 text-gray-900 rounded-br-none'
+                                                : 'bg-white text-gray-900 border border-gray-100 rounded-bl-none'
+                                            }`}
+                                    >
+                                        {!isMe && (
+                                            <div className="text-[10px] font-bold text-violet-600 mb-0.5 leading-tight">
+                                                {author?.name}
                                             </div>
-                                        </div>
-                                    ) : (
-                                        <div className="group relative">
-                                            <div className={`p-3 rounded-lg text-sm ${isMe ? 'bg-[var(--primary-light)] text-[var(--primary-hover)]' : 'bg-white border border-[var(--border)]'}`}>
-                                                {comment.content}
-                                            </div>
-                                            {isMe && (
-                                                <div className="absolute top-0 -left-14 h-full flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity px-2">
-                                                    <button onClick={() => handleStartEdit(comment.id, comment.content)} className="p-1 text-gray-500 hover:text-blue-500">
-                                                        <Edit2 size={14} />
+                                        )}
+
+                                        {isEditing ? (
+                                            <div className="flex flex-col gap-1 min-w-[200px]">
+                                                <Input
+                                                    value={editContent}
+                                                    onChange={(e) => setEditContent(e.target.value)}
+                                                    autoFocus
+                                                    className="text-sm"
+                                                />
+                                                <div className="flex gap-2 justify-end mt-1">
+                                                    <button onClick={() => handleSaveEdit(comment.id)} className="p-1 text-green-600 hover:bg-green-50 rounded">
+                                                        <Check size={16} />
                                                     </button>
-                                                    <button onClick={() => handleDeleteComment(comment.id)} className="p-1 text-gray-500 hover:text-red-500">
-                                                        <Trash2 size={14} />
+                                                    <button onClick={handleCancelEdit} className="p-1 text-red-500 hover:bg-red-50 rounded">
+                                                        <X size={16} />
                                                     </button>
                                                 </div>
-                                            )}
-                                        </div>
-                                    )}
-                                    <span className="text-[10px] text-secondary mt-1">
-                                        {comment.createdAt ? new Date(comment.createdAt).toLocaleString([], { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : ''}
-                                    </span>
+                                            </div>
+                                        ) : (
+                                            <>
+                                                <div className="whitespace-pre-wrap break-words pr-2">
+                                                    {comment.content}
+                                                </div>
+                                                <div className={`text-[9px] text-gray-400 text-right mt-1 select-none leading-none flex justify-end items-center gap-1 ${isMe ? 'opacity-80' : ''}`}>
+                                                    {comment.createdAt ? new Date(comment.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
+                                                    {/* Edit/Delete Actions (Only visible on hover for 'Me') */}
+                                                    {isMe && (
+                                                        <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-1 ml-2">
+                                                            <button onClick={() => handleStartEdit(comment.id, comment.content)} className="text-gray-500 hover:text-blue-600">
+                                                                <Edit2 size={10} />
+                                                            </button>
+                                                            <button onClick={() => handleDeleteComment(comment.id)} className="text-gray-500 hover:text-red-500">
+                                                                <Trash2 size={10} />
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         );

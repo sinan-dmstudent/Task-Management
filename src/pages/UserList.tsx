@@ -42,11 +42,11 @@ export const UserList: React.FC = () => {
                 {currentUser?.role === 'Admin' && (
                     <Link
                         to="/create-user"
-                        className="btn btn-primary btn-sm w-10 h-10 p-0 flex items-center justify-center shadow-md rounded-full"
+                        className="btn btn-primary btn-sm w-14 h-14 p-0 flex items-center justify-center shadow-md rounded-full text-white"
                         aria-label="Create User"
                         title="Create User"
                     >
-                        <Plus size={24} className="animate-bounce" />
+                        <Plus size={24} strokeWidth={3} />
                     </Link>
                 )}
             </div>
