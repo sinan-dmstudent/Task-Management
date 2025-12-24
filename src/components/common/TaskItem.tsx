@@ -58,7 +58,7 @@ export const TaskItem: React.FC<TaskItemProps> = ({ task }) => {
                         position: 'absolute',
                         top: '16px',
                         right: '16px',
-                        backgroundColor: task.status === 'Completed' ? '#4ade80' : (task.priority === 'High' ? '#ef4444' : task.priority === 'Medium' ? '#fb923c' : '#3b82f6')
+                        backgroundColor: task.status === 'Completed' ? '#C1E59F' : (task.priority === 'High' ? '#AA2B1D' : task.priority === 'Medium' ? '#F7B980' : '#ABE0F0')
                     }}
                 >
                     <span>{task.status === 'Completed' ? 'Completed' : task.priority}</span>

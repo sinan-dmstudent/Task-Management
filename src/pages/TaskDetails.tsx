@@ -182,8 +182,8 @@ export const TaskDetails: React.FC = () => {
                             key={s}
                             onClick={() => handleStatusChange(s)}
                             className={`flex-1 py-3 px-4 text-sm font-bold rounded-lg transition-all transform active:scale-95 duration-200 border shadow-sm ${task.status === s
-                                    ? 'bg-violet-600 text-white border-violet-600 ring-2 ring-violet-200'
-                                    : 'bg-white text-gray-600 border-gray-200 hover:border-violet-400 hover:text-violet-600'
+                                ? 'bg-violet-600 text-white border-violet-600 ring-2 ring-violet-200'
+                                : 'bg-white text-gray-600 border-gray-200 hover:border-violet-400 hover:text-violet-600'
                                 }`}
                             style={{
                                 minWidth: '100px',
